@@ -24,7 +24,7 @@ data = dataset.graph("https://imaging-plaza.epfl.ch/finalGraph")
 data.parse(knowledge_graph_path)
 # Load the knowledge graph
 
-#todo filter down ontology to only get triples related to enumerations
+# todo filter down ontology to only get triples related to enumerations
 
 # Filter down ontology to only get triples related to enumerations
 enumeration_query = r"""
@@ -42,9 +42,6 @@ WHERE {
 enumeration_results = onto.query(enumeration_query)
 # Create a new graph to store the enumeration triples
 enumeration_graph = rdflib.Graph()
-
-
-
 
 
 # Add the results of the CONSTRUCT query to the new graph
@@ -123,12 +120,13 @@ for term in constructed_graph.query(query2):
     searchterm = term[0]
     predicate = term[1]
     predset.add(predicate)
-    
 
-    if sorted(matcher.score(searchterm), reverse= True )[0] / len(searchterm) > 0.8:
-        print(str(matcher.top(searchterm, 1)) + " coming from predicate " + predicate) # shows the top match
+    if sorted(matcher.score(searchterm), reverse=True)[0] / len(searchterm) > 0.8:
+        print(
+            str(matcher.top(searchterm, 1)) + " coming from predicate " + predicate
+        )  # shows the top match
 # Attempt to match those strings to strings in the ontology (Agent 2 - FUZON )
-# 
+#
 # If it does not find a match - (Agent 3 - LLM agent)
 
 # Validate whether the returned match actually exists in one of the ontologies (Agent 4 - SPARQL (ask query))
@@ -138,5 +136,3 @@ for term in constructed_graph.query(query2):
 # Return the new and improved knowledge graph
 
 agent = "4o-mini"
-
-
