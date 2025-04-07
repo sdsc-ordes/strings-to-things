@@ -124,9 +124,9 @@ for term in constructed_graph.query(query2):
     predicate = term[1]
     predset.add(predicate)
     
-print(len((predset)))
-    # if sorted(matcher.score(searchterm), reverse= True )[0] > 0.8:
-    #     print(str(matcher.top(searchterm, 1)) + " coming from predicate " + predicate) # shows the top match
+
+    if sorted(matcher.score(searchterm), reverse= True )[0] / len(searchterm) > 0.8:
+        print(str(matcher.top(searchterm, 1)) + " coming from predicate " + predicate) # shows the top match
 # Attempt to match those strings to strings in the ontology (Agent 2 - FUZON )
 # 
 # If it does not find a match - (Agent 3 - LLM agent)
