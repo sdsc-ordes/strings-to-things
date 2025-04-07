@@ -1,5 +1,6 @@
 import dotenv
 import os
+from format import append_input_term
 
 dotenv.load_dotenv()
 
@@ -113,18 +114,19 @@ WHERE {
 
 matcher = TermMatcher.from_files([ontologies_path])
 
-predset = set()
-
+inputdict = {}
 for term in constructed_graph.query(query2):
     # print(term)
     searchterm = term[0]
     predicate = term[1]
-    predset.add(predicate)
-
     if sorted(matcher.score(searchterm), reverse=True)[0] / len(searchterm) > 0.8:
-        print(
-            str(matcher.top(searchterm, 1)) + " coming from predicate " + predicate
-        )  # shows the top match
+        suggestedterm = matcher.top(searchterm, 1)[0]
+        print(suggestedterm.get("uri"))
+        # append_input_term(inputdict, str(searchterm), str(predicate), suggestedterm)
+
+# print(inputdict)
+
+# shows the top match
 # Attempt to match those strings to strings in the ontology (Agent 2 - FUZON )
 #
 # If it does not find a match - (Agent 3 - LLM agent)
