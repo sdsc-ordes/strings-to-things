@@ -1,14 +1,14 @@
 # This Git ignore file should be treated WITH care.
 #
-# Keep it easy to understand and concise that means follow these rules:
+# Keep it easy to understand and concise:
 #
-# - Add stuff when needed, DO not copy stuff from the internet
+# - Add stuff when needed, do NOT copy stuff from the internet
 #   just to ignore a whole set of files you think
 #   might be needed in the future.
 #
 # - Do NOT add here ignores which are deeply nested in the
 #   repository structure, instead
-#   use deidcated local `.gitignore` files inside the directories to
+#   use dedicated local `.gitignore` files inside the directories to
 #   ignore what you need. This file should ONLY deal common top-level
 #   ignores and things you want to ignore.
 
@@ -28,3 +28,5 @@
 .prettierrc.yaml
 .yamllint.yaml
 .typos.toml
+
+.env
