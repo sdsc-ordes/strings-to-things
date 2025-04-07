@@ -7,6 +7,8 @@ apikey = os.getenv("OPEN-AI-KEY")
 
 from agents import Agent, ModelSettings, function_tool
 import rdflib
+from pyfuzon.matcher import TermMatcher
+
 
 knowledge_graph_path = os.getenv("KNOWLEDGE_GRAPH_PATH")
 
@@ -69,7 +71,15 @@ for triple in results.graph:
     constructed_graph.add(triple)
 
 
+matcher = TermMatcher.from_files([ontologies_path])
+matcher.terms #accesses the list of terms loaded from input files
+searchterm = "query"
+if sorted(matcher.score(searchterm), reverse= True )[0] > 0.5:
+    print(matcher.top(searchterm, 1)) # shows the top match
 
+
+else:
+    print("########### GET WRECKED NOOB 😎💥🔥👑 ###########")
 # Attempt to match those strings to strings in the ontology (Agent 2 - FUZON )
 # 
 # If it does not find a match - (Agent 3 - LLM agent)
