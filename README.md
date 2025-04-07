@@ -8,7 +8,6 @@
 <p align="center">
 </p>
 
-
 [![Current Release](https://img.shields.io/github/release/swissdatasciencecenter/strings-to-things.svg?label=release)](https://github.com/swissdatasciencecenter/strings-to-things/releases/latest)
 [![Pipeline Status](https://img.shields.io/github/actions/workflow/status/swissdatasciencecenter/strings-to-things/normal.yaml?label=ci)](https://github.com/swissdatasciencecenter/strings-to-things/actions/workflows/normal.yaml)
 [![License label](https://img.shields.io/badge/License-Apache2.0-blue.svg?)](http://www.apache.org/licenses/LICENSE-2.0.html)
@@ -17,7 +16,6 @@
 
 - [Robin Franken](mailto:robin.franken@epfl.ch)
 - [Martin Fontanet](mailto:martin.fontanet@epfl.ch)
-
 
 ## Installation
 

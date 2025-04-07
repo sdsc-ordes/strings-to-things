@@ -18,8 +18,6 @@
   };
   programs.shellcheck.enable = true;
 
-  
-
   # Lua.
   programs.stylua.enable = true;
 

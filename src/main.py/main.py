@@ -1,15 +1,15 @@
+from format import append_input_term
+from pyfuzon.matcher import TermMatcher
 import dotenv
 import os
-from format import append_input_term
+import json
+import rdflib
+
+MATCH_THRESHOLD = 0.8
 
 dotenv.load_dotenv()
 
 apikey = os.getenv("OPEN-AI-KEY")
-
-from agents import Agent, ModelSettings, function_tool
-import rdflib
-from pyfuzon.matcher import TermMatcher
-
 
 knowledge_graph_path = os.getenv("KNOWLEDGE_GRAPH_PATH")
 
@@ -61,7 +61,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 CONSTRUCT {
     ?s ?p ?result .
 }
-WHERE { 
+WHERE {
     GRAPH <https://imaging-plaza.epfl.ch/finalGraph> {
         ?s ?p ?o .
         FILTER (!(?p IN (schema:name, schema:description, rdfs:comment, skos:definition)))
@@ -71,17 +71,17 @@ WHERE {
     }
     GRAPH <https://imaging-plaza.epfl.ch/ontology#enums> {
         OPTIONAL {
-            ?s2 rdfs:label ?o. 
+            ?s2 rdfs:label ?o.
         }
-        
+
         # Ensure only one IRI is bound to the label, skipping rows with multiple IRIs
         FILTER NOT EXISTS {
             ?s3 rdfs:label ?o.
             FILTER (?s3 != ?s2)  # Ensures ?s2 is the only IRI bound to the label
         }
     }
-    
-    BIND(IF(BOUND(?s2), ?s2, ?o) AS ?result) 
+
+    BIND(IF(BOUND(?s2), ?s2, ?o) AS ?result)
 }
 
 """
@@ -104,7 +104,7 @@ PREFIX schema: <http://schema.org/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?o ?p
-WHERE { 
+WHERE {
     ?s ?p ?o .
         FILTER (!(?p IN (schema:name, schema:description, rdfs:comment, skos:definition)))
         FILTER (!regex(STR(?o), "^[ \t]*https?://"))
@@ -119,12 +119,17 @@ for term in constructed_graph.query(query2):
     # print(term)
     searchterm = term[0]
     predicate = term[1]
-    if sorted(matcher.score(searchterm), reverse=True)[0] / len(searchterm) > 0.8:
+    if sorted(matcher.score(searchterm), reverse=True)[0] / len(searchterm) > MATCH_THRESHOLD:
         suggestedterm = matcher.top(searchterm, 1)[0]
-        print(suggestedterm.get("uri"))
-        # append_input_term(inputdict, str(searchterm), str(predicate), suggestedterm)
+        # print(suggestedterm.uri)
+        append_input_term(inputdict, str(searchterm), str(predicate), suggestedterm.uri)
+    else :
+        append_input_term(inputdict, str(searchterm), str(predicate), None)
 
-# print(inputdict)
+json_input = json.dumps(inputdict)
+
+# TODO: create enums list
+# TODO: call LLM
 
 # shows the top match
 # Attempt to match those strings to strings in the ontology (Agent 2 - FUZON )

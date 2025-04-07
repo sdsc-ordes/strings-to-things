@@ -33,8 +33,8 @@
 
     # The devenv module to create good development shells.
     devenv = {
-        url = "github:cachix/devenv/latest";
-        inputs.nixpkgs.follows = "nixpkgsDevenv";
+      url = "github:cachix/devenv/latest";
+      inputs.nixpkgs.follows = "nixpkgsDevenv";
     };
     # We should lock the pkgs in `mkShell` here:
     # https://github.com/cachix/devenv/issues/1797
@@ -56,7 +56,7 @@
     };
   };
 
-outputs =
+  outputs =
     inputs:
     let
       root-dir = ../..;

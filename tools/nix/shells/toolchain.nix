@@ -12,7 +12,8 @@ let
   language = "python";
   toolchains = lib.${namespace}.toolchain.import ./. args;
 in
-toolchains // rec {
+toolchains
+// rec {
   default = toolchains.${language};
   ci = default;
 }
