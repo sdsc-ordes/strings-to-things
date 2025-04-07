@@ -1,0 +1,23 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_src_path: src/generic
+project_affiliation: SDSC - Swiss Data Science Center
+project_authors:
+-   email: robin.franken@epfl.ch
+    first_name: Robin
+    last_name: Franken
+-   email: martin.fontanet@epfl.ch
+    first_name: Martin
+    last_name: Fontanet
+project_description: This a repository turns strings into things
+project_hosts:
+-   host: github.com
+    organization: swissdatasciencecenter
+    repo: strings-to-things
+-   host: gitlab.datascience.ch
+    organization: my-organization
+    repo: strings-to-things
+project_language: python
+project_license: apache2
+project_name: strings-to-things
+project_url: https://github.com/sdsc-ordes/strings-to-things
+project_version: 0.0.1
