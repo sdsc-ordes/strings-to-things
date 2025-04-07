@@ -70,16 +70,30 @@ constructed_graph = rdflib.Graph()
 for triple in results.graph:
     constructed_graph.add(triple)
 
+query2 = r"""
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <http://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?o
+WHERE { 
+    ?s ?p ?o .
+        FILTER (!(?p IN (schema:name, schema:description, rdfs:comment, skos:definition)))
+        FILTER (!regex(STR(?o), "^[ \t]*https?://"))
+        FILTER (!regex(STR(?o), "^\\d{4}-\\d{2}-\\d{2}T00:00:00\\.000Z$"))
+        FILTER (datatype(?o) = xsd:string)
+}"""
 
 matcher = TermMatcher.from_files([ontologies_path])
-matcher.terms #accesses the list of terms loaded from input files
-searchterm = "query"
-if sorted(matcher.score(searchterm), reverse= True )[0] > 0.5:
-    print(matcher.top(searchterm, 1)) # shows the top match
+for term in constructed_graph.query(query2):
+    print(term)
+    searchterm = term[0]
+    if sorted(matcher.score(searchterm), reverse= True )[0] > 0.8:
+        print(matcher.top(searchterm, 1)) # shows the top match
 
-
-else:
-    print("########### GET WRECKED NOOB 😎💥🔥👑 ###########")
+    else:
+        print("########### GET WRECKED NOOB 😎💥🔥👑 ###########")
 # Attempt to match those strings to strings in the ontology (Agent 2 - FUZON )
 # 
 # If it does not find a match - (Agent 3 - LLM agent)
