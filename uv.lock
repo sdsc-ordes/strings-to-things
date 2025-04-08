@@ -692,35 +692,6 @@ wheels = [
 ]
 
 [[package]]
-name = "main-py"
-version = "0.0.1"
-source = { editable = "." }
-dependencies = [
-    { name = "dotenv" },
-    { name = "openai-agents" },
-    { name = "pydantic" },
-    { name = "pyfuzon" },
-    { name = "rdflib" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "notebook" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "dotenv", specifier = ">=0.9.9" },
-    { name = "openai-agents", specifier = ">=0.0.8" },
-    { name = "pydantic", specifier = ">=2.10.6" },
-    { name = "pyfuzon", specifier = ">=0.3.0" },
-    { name = "rdflib", specifier = ">=7.1.4" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "notebook", specifier = ">=7.3.2" }]
-
-[[package]]
 name = "markupsafe"
 version = "3.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1401,6 +1372,35 @@ sdist = { url = "https://files.pythonhosted.org/packages/04/1b/52b27f2e13ceedc79
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/4b/528ccf7a982216885a1ff4908e886b8fb5f19862d1962f56a3fce2435a70/starlette-0.46.1-py3-none-any.whl", hash = "sha256:77c74ed9d2720138b25875133f3a2dae6d854af2ec37dceb56aef370c1d8a227", size = 71995 },
 ]
+
+[[package]]
+name = "strings2things"
+version = "0.0.1"
+source = { editable = "." }
+dependencies = [
+    { name = "dotenv" },
+    { name = "openai-agents" },
+    { name = "pydantic" },
+    { name = "pyfuzon" },
+    { name = "rdflib" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "notebook" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "dotenv", specifier = ">=0.9.9" },
+    { name = "openai-agents", specifier = ">=0.0.8" },
+    { name = "pydantic", specifier = ">=2.10.6" },
+    { name = "pyfuzon", specifier = ">=0.3.0" },
+    { name = "rdflib", specifier = ">=7.1.4" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "notebook", specifier = ">=7.3.2" }]
 
 [[package]]
 name = "terminado"

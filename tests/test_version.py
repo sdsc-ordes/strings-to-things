@@ -1,6 +1,6 @@
 import re
 
-from main.py import __version__
+from strings2things import __version__
 
 
 def test_version_format():

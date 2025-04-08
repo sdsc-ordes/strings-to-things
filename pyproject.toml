@@ -1,5 +1,5 @@
 [project]
-name = "main.py"
+name = "strings2things"
 authors = [
   { name = "Robin Franken", email = "robin.franken@epfl.ch" },
   { name = "Martin Fontanet", email = "martin.fontanet@epfl.ch" },
@@ -22,7 +22,7 @@ dev = [
 ]
 
 [project.scripts]
-cli = 'main.py.cli:main'
+cli = 'strings2things.cli:main'
 
 [build-system]
 requires = ["hatchling"]

@@ -1,6 +1,6 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 _src_path: src/python
-module_name: main.py
+module_name: strings2things
 project_authors:
   - email: robin.franken@epfl.ch
     first_name: Robin

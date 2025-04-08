@@ -57,7 +57,7 @@ test *args:
 
 # Run an executable.
 run *args:
-    uv run cli "$@"
+    uv run --env-file=.env cli "$@"
 
 # Run the Jupyter notebook.
 notebook *args:
