@@ -1,6 +1,5 @@
-import os
 from dotenv import load_dotenv
-from config import args
+from strings2things.config import args
 
 # Load environment variables from the .env file
 load_dotenv()
