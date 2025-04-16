@@ -23,7 +23,7 @@ Describe the installation instruction here.
 
 ## Usage
 
-Describe the installation instruction here.
+This tool aims to provide a generic and easy way of converting knowledge graphs with many strings to a knowledge graph using many "things"/ IRI's as values. The reverse can also be achieved. Both cases are based on an ontology containing enumeration values with labels.
 
 ## Development
 
