@@ -9,18 +9,6 @@ load_dotenv()
 INSTANCE_DATA_GRAPH = args.kg_uri
 ONTOLOGY_GRAPH = args.ontology_uri
 
-# # Parametrize the queries
-# enumeration_query = r"""
-# PREFIX schema: <http://schema.org/>
-# PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-# PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-#     CONSTRUCT {?subject ?predicate ?object }
-#     WHERE {
-#         ?subject rdf:type/rdfs:subClassOf* schema:Enumeration .
-#         ?subject ?predicate ?object .
-#     }
-# """
-
 strings_to_things_query = f"""
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

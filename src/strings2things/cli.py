@@ -3,10 +3,7 @@ import glob
 import argparse
 import rdflib
 from strings2things.config import args
-from strings2things.sparql import (
-    strings_to_things_query,
-    things_to_strings_query
-)
+from strings2things.sparql import strings_to_things_query, things_to_strings_query
 
 
 def load_graphs_from_path(path, graph, file_extension="*.ttl", format="turtle"):
@@ -47,7 +44,9 @@ def strings_to_things(dataset, output_file=args.output):
         new_graph.add(triple)
 
     new_graph.serialize(destination=output_file, format="turtle")
-    print(f"Strings replaced with IRIs and written to {output_file} ({len(new_graph)} triples).")
+    print(
+        f"Strings replaced with IRIs and written to {output_file} ({len(new_graph)} triples)."
+    )
 
 
 def things_to_strings(dataset, output_file=args.output):
@@ -61,7 +60,9 @@ def things_to_strings(dataset, output_file=args.output):
         new_graph.add(triple)
 
     new_graph.serialize(destination=output_file, format="turtle")
-    print(f"IRIs replaced with labels and written to {output_file} ({len(new_graph)} triples).")
+    print(
+        f"IRIs replaced with labels and written to {output_file} ({len(new_graph)} triples)."
+    )
 
 
 def main():
