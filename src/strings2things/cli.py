@@ -1,73 +1,76 @@
-from strings2things.format import append_input_term
-from strings2things.sparql import enumeration_query, find_matches_query, find_predicate_query
-from pyfuzon.matcher import TermMatcher
 import os
-import json
+import glob
+import argparse
 import rdflib
+from strings2things.config import args
+from strings2things.sparql import (
+    strings_to_things_query,
+    things_to_strings_query
+)
 
-MATCH_THRESHOLD = 0.8
 
-def main():
-    knowledge_graph_path = os.getenv("KNOWLEDGE_GRAPH_PATH")
-    ontologies_path = os.getenv("ONTOLOGIES_PATH")
+def load_graphs_from_path(path, graph, file_extension="*.ttl", format="turtle"):
+    """
+    Load all RDF files from a given path into the provided graph.
+    """
+    for file_path in glob.glob(os.path.join(path, file_extension)):
+        print(f"Processing file: {file_path}")
+        graph.parse(file_path, format=format)
+    print(f"Loaded {len(graph)} triples from {path}.")
 
-    onto = rdflib.Graph()
-    onto.parse(ontologies_path)
 
-    # SPARQLwrapper
+def initialize_graphs(ontology_path, kg_path, ontology_uri, kg_uri):
+    """
+    Load and return ontology and knowledge graphs inside a shared dataset.
+    """
     dataset = rdflib.Dataset()
 
-    #FIXME: Is `data` used?
-    data = dataset.graph("https://imaging-plaza.epfl.ch/finalGraph")
-    data.parse(knowledge_graph_path)
-    # Load the knowledge graph
+    # Load KG
+    knowledge_graph = dataset.graph(kg_uri)
+    load_graphs_from_path(kg_path, knowledge_graph)
 
-    # todo filter down ontology to only get triples related to enumerations
+    # Load ontology
+    ontology_graph = dataset.graph(ontology_uri)
+    load_graphs_from_path(ontology_path, ontology_graph)
 
-    # Filter down ontology to only get triples related to enumerations
-
-    enumeration_results = onto.query(enumeration_query)
-    # Create a new graph to store the enumeration triples
-    enumeration_graph = rdflib.Graph()
+    return dataset
 
 
-    # Add the results of the CONSTRUCT query to the new graph
-    for triple in enumeration_results.graph:
-        enumeration_graph.add(triple)
+def strings_to_things(dataset, output_file=args.output):
+    """
+    Replace human-readable strings in the KG with ontology IRIs based on matches.
+    """
+    results = dataset.query(strings_to_things_query)
+    new_graph = rdflib.Graph()
 
-    #FIXME: Is `enum` used?
-    enum = dataset.graph("https://imaging-plaza.epfl.ch/ontology#enums")
-    enum.parse(data=enumeration_graph.serialize(format="turtle"), format="turtle")
-
-    results = dataset.query(find_matches_query)
-
-    # Create a new graph to store the constructed triples
-    constructed_graph = rdflib.Graph()
-
-    # Add the results of the CONSTRUCT query to the new graph
     for triple in results.graph:
-        constructed_graph.add(triple)
+        new_graph.add(triple)
+
+    new_graph.serialize(destination=output_file, format="turtle")
+    print(f"Strings replaced with IRIs and written to {output_file} ({len(new_graph)} triples).")
 
 
-    matcher = TermMatcher.from_files([ontologies_path])
+def things_to_strings(dataset, output_file=args.output):
+    """
+    Replace IRIs in the KG with human-readable labels using the ontology.
+    """
+    results = dataset.query(things_to_strings_query)
 
-    inputdict = {}
-    for term in constructed_graph.query(find_predicate_query):
-        searchterm = term[0]
-        predicate = term[1]
-        if sorted(matcher.score(searchterm), reverse=True)[0] / len(searchterm) > MATCH_THRESHOLD:
-            suggestedterm = matcher.top(searchterm, 1)[0]
-            print(suggestedterm.uri)
-            append_input_term(inputdict, str(searchterm), str(predicate), suggestedterm.uri)
-        else :
-            append_input_term(inputdict, str(searchterm), str(predicate), None)
+    new_graph = rdflib.Graph()
+    for triple in results.graph:
+        new_graph.add(triple)
 
-    json_input = json.dumps(inputdict)
+    new_graph.serialize(destination=output_file, format="turtle")
+    print(f"IRIs replaced with labels and written to {output_file} ({len(new_graph)} triples).")
 
-    print(json_input)
 
-# TODO: create enums list
-# TODO: call LLM
+def main():
+    dataset = initialize_graphs(args.ontology, args.kg, args.ontology_uri, args.kg_uri)
+
+    if args.direction == "string2thing":
+        strings_to_things(dataset)
+    elif args.direction == "thing2string":
+        things_to_strings(dataset)
 
 
 if __name__ == "__main__":

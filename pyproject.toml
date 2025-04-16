@@ -23,7 +23,6 @@ dev = [
 
 [project.scripts]
 cli = 'strings2things.cli:main'
-cli2 = 'strings2things.cli2:main'
 
 [build-system]
 requires = ["hatchling"]
