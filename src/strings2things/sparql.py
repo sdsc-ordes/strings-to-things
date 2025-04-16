@@ -1,59 +1,83 @@
-enumeration_query = r"""
+import os
+from dotenv import load_dotenv
+from config import args
+
+# Load environment variables from the .env file
+load_dotenv()
+
+# Parse graph names from command-line arguments
+# Assign graph names
+INSTANCE_DATA_GRAPH = args.kg_uri
+ONTOLOGY_GRAPH = args.ontology_uri
+
+# # Parametrize the queries
+# enumeration_query = r"""
+# PREFIX schema: <http://schema.org/>
+# PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+# PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+#     CONSTRUCT {?subject ?predicate ?object }
+#     WHERE {
+#         ?subject rdf:type/rdfs:subClassOf* schema:Enumeration .
+#         ?subject ?predicate ?object .
+#     }
+# """
+
+strings_to_things_query = f"""
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX schema: <http://schema.org/>
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
 
-construct { ?subject ?predicate ?object }
-WHERE {
-    ?subject a schema:Enumeration .
-    ?subject ?predicate ?object .
-}
-"""
-
-find_matches_query = r"""
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX schema: <http://schema.org/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-CONSTRUCT {
-    ?s ?p ?result .
-}
-WHERE {
-    GRAPH <https://imaging-plaza.epfl.ch/finalGraph> {
+CONSTRUCT {{
+    ?s ?p ?finalValue .
+}}
+WHERE {{
+    GRAPH <{INSTANCE_DATA_GRAPH}> {{
         ?s ?p ?o .
-        FILTER (!(?p IN (schema:name, schema:description, rdfs:comment, skos:definition)))
-        FILTER (!regex(STR(?o), "^[ \t]*https?://"))
-        FILTER (!regex(STR(?o), "^\\d{4}-\\d{2}-\\d{2}T00:00:00\\.000Z$"))
-        FILTER (datatype(?o) = xsd:string)
-    }
-    GRAPH <https://imaging-plaza.epfl.ch/ontology#enums> {
-        OPTIONAL {
-            ?s2 rdfs:label ?o.
-        }
+    }}
 
-        # Ensure only one IRI is bound to the label, skipping rows with multiple IRIs
-        FILTER NOT EXISTS {
-            ?s3 rdfs:label ?o.
-            FILTER (?s3 != ?s2)  # Ensures ?s2 is the only IRI bound to the label
-        }
-    }
+    # Find the expected enumeration class for this property
+    GRAPH <{ONTOLOGY_GRAPH}> {{
+        OPTIONAL {{
+            ?propertyShape sh:path ?p ;
+                           sh:class ?expectedEnumClass .
 
-    BIND(IF(BOUND(?s2), ?s2, ?o) AS ?result)
-}
+            ?enumInstance rdf:type*/rdfs:subClassOf* ?expectedEnumClass ;
+                          rdfs:label ?o .
+        }}
+    }}
+
+    # Choose only one matching IRI per string, ensuring correct category
+    BIND(COALESCE(?enumInstance, ?o) AS ?finalValue)
+}}
 """
 
-find_predicate_query = r"""
-PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+things_to_strings_query = f"""
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX schema: <http://schema.org/>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
 
-SELECT ?o ?p
-WHERE {
-    ?s ?p ?o .
-        FILTER (!(?p IN (schema:name, schema:description, rdfs:comment, skos:definition)))
-        FILTER (!regex(STR(?o), "^[ \t]*https?://"))
-        FILTER (!regex(STR(?o), "^\\d{4}-\\d{2}-\\d{2}T00:00:00\\.000Z$"))
-        FILTER (datatype(?o) = xsd:string)
-}"""
+CONSTRUCT {{
+    ?s ?p ?finalValue .
+}}
+WHERE {{
+    GRAPH <{INSTANCE_DATA_GRAPH}> {{
+        ?s ?p ?o .
+    }}
+
+    # Get the expected enum class for this property
+    GRAPH <{ONTOLOGY_GRAPH}> {{
+        OPTIONAL {{
+            ?propertyShape sh:path ?p ;
+                           sh:class ?expectedEnumClass .
+
+            ?o a ?expectedEnumClass ;
+               rdfs:label ?label .
+        }}
+    }}
+
+    # If a label is found (meaning ?o is an enum instance), use it; otherwise keep the original value
+    BIND(COALESCE(?label, ?o) AS ?finalValue)
+}}
+"""
