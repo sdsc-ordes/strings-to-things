@@ -69,7 +69,7 @@ WHERE {{
 }}
 """
 
-def get_item_query(repo):
+def get_item_query(repo: str, graph: str) -> str:
     """
     This function generates a SPARQL query to retrieve the subgraph of a given repository.
     It constructs a query that retrieves the subject, predicate, and object of the repository,
@@ -77,6 +77,7 @@ def get_item_query(repo):
 
     Args:
         repo (str): The URI of the repository.
+        graph (str): The graph name where the repository is located.
 
     Returns:
         str: The SPARQL query string.
@@ -88,7 +89,7 @@ def get_item_query(repo):
         ?object ?p ?o .
         ?o ?something ?else .
         }} WHERE {{
-        GRAPH <${INSTANCE_DATA_GRAPH}{{
+        GRAPH <${graph}{{
             {{
             {{?subject ?predicate ?object .
             filter(?subject = <${repo}> )

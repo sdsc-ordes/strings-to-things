@@ -11,7 +11,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.6.3 /uv /uvx /bin/
 ADD . /app
 WORKDIR /app
 
-RUN pip install --no-cache-dir rdflib dotenv
+RUN pip install --no-cache-dir rdflib dotenv fastapi uvicorn
 
 
 COPY --chmod=755 tools/docker/entrypoint.sh /

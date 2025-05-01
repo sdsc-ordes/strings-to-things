@@ -20,8 +20,9 @@ docker build -t string2things -f tools/docker/Dockerfile .
 docker run -it --rm --env-file .env -p 1234:1234 -v .:/app --entrypoint bash string2things 
 ```
 
-- pip install fastapi
-- `python3 -m uvicorn strings2things.api:app --host 0.0.0.0 --port 1234`
+```bash
+python3 -m uvicorn strings2things.api:app --host 0.0.0.0 --port 1234
+```
 
 
 <!-- Additional 'scopes' should be described here.-->
