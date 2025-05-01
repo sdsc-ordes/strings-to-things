@@ -68,3 +68,33 @@ WHERE {{
     BIND(COALESCE(?label, ?o) AS ?finalValue)
 }}
 """
+
+def get_item_query(repo):
+    """
+    This function generates a SPARQL query to retrieve the subgraph of a given repository.
+    It constructs a query that retrieves the subject, predicate, and object of the repository,
+    along with additional properties and values.
+
+    Args:
+        repo (str): The URI of the repository.
+
+    Returns:
+        str: The SPARQL query string.
+    """
+    item_query = f"""
+        PREFIX : <https://imaging-plaza.epfl.ch/>
+        CONSTRUCT {{
+        ?subject ?predicate ?object .
+        ?object ?p ?o .
+        ?o ?something ?else .
+        }} WHERE {{
+        GRAPH <${INSTANCE_DATA_GRAPH}{{
+            {{
+            {{?subject ?predicate ?object .
+            filter(?subject = <${repo}> )
+            OPTIONAL {{ ?object ?p ?o . 
+            OPTIONAL {{?o ?something ?else}}
+                    }}}}}}}}}} 
+    """
+
+    return item_query
