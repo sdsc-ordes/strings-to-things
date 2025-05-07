@@ -21,7 +21,10 @@ docker run -it --rm --env-file .env -p 1234:1234 -v .:/app --entrypoint bash str
 ```
 
 ```bash
-python3 -m uvicorn strings2things.api:app --host 0.0.0.0 --port 1234
+python3 -m uvicorn --reload strings2things.api:app --host 0.0.0.0 --port 1234
+uvicorn strings2things.api:app --reload --host 0.0.0.0 --port 1234
+
+export PYTHONPATH="/app/src:$PYTHONPATH"
 ```
 
 

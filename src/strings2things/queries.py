@@ -1,73 +1,105 @@
 from dotenv import load_dotenv
-from strings2things.config import args
+from strings2things.config import config_args
 
 # Load environment variables from the .env file
 load_dotenv()
 
 # Parse graph names from command-line arguments
 # Assign graph names
-INSTANCE_DATA_GRAPH = args.kg_uri
-ONTOLOGY_GRAPH = args.ontology_uri
 
-strings_to_things_query = f"""
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX schema: <http://schema.org/>
-PREFIX sh: <http://www.w3.org/ns/shacl#>
+def get_strings_to_things_query(instance_data_graph: str, ontology_graph: str) -> str:
+    """
+    This function generates a SPARQL query to convert human-readable strings in the KG to ontology IRIs.
+    It constructs a query that retrieves the subject, predicate, and object of the repository,
+    along with additional properties and values.
 
-CONSTRUCT {{
-    ?s ?p ?finalValue .
-}}
-WHERE {{
-    GRAPH <{INSTANCE_DATA_GRAPH}> {{
-        ?s ?p ?o .
+    Args:
+        instance_data_graph (str): The URI of the instance data graph.
+        ontology_graph (str): The URI of the ontology graph.
+
+    Returns:
+        str: The SPARQL query string.
+    """
+
+    strings_to_things_query = f"""
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX schema: <http://schema.org/>
+    PREFIX sh: <http://www.w3.org/ns/shacl#>
+
+    CONSTRUCT {{
+        ?s ?p ?finalValue .
     }}
-
-    # Find the expected enumeration class for this property
-    GRAPH <{ONTOLOGY_GRAPH}> {{
-        OPTIONAL {{
-            ?propertyShape sh:path ?p ;
-                           sh:class ?expectedEnumClass .
-
-            ?enumInstance rdf:type*/rdfs:subClassOf* ?expectedEnumClass ;
-                          rdfs:label ?o .
+    WHERE {{
+        GRAPH <{instance_data_graph}> {{
+            ?s ?p ?o .
         }}
-    }}
 
-    # Choose only one matching IRI per string, ensuring correct category
-    BIND(COALESCE(?enumInstance, ?o) AS ?finalValue)
-}}
-"""
+        # Find the expected enumeration class for this property
+        GRAPH <{ontology_graph}> {{
+            OPTIONAL {{
+                ?propertyShape sh:path ?p ;
+                            sh:class ?expectedEnumClass .
 
-things_to_strings_query = f"""
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX schema: <http://schema.org/>
-PREFIX sh: <http://www.w3.org/ns/shacl#>
-
-CONSTRUCT {{
-    ?s ?p ?finalValue .
-}}
-WHERE {{
-    GRAPH <{INSTANCE_DATA_GRAPH}> {{
-        ?s ?p ?o .
-    }}
-
-    # Get the expected enum class for this property
-    GRAPH <{ONTOLOGY_GRAPH}> {{
-        OPTIONAL {{
-            ?propertyShape sh:path ?p ;
-                           sh:class ?expectedEnumClass .
-
-            ?o a ?expectedEnumClass ;
-               rdfs:label ?label .
+                ?enumInstance rdf:type*/rdfs:subClassOf* ?expectedEnumClass ;
+                            rdfs:label ?o .
+            }}
         }}
-    }}
 
-    # If a label is found (meaning ?o is an enum instance), use it; otherwise keep the original value
-    BIND(COALESCE(?label, ?o) AS ?finalValue)
-}}
-"""
+        # Choose only one matching IRI per string, ensuring correct category
+        BIND(COALESCE(?enumInstance, ?o) AS ?finalValue)
+    }}
+    """
+
+    return strings_to_things_query
+
+
+
+def get_things_to_strings_query(instance_data_graph: str, ontology_graph: str) -> str:
+    """
+    This function generates a SPARQL query to convert ontology IRIs in the KG to human-readable strings.
+    It constructs a query that retrieves the subject, predicate, and object of the repository,
+    along with additional properties and values.
+
+    Args:
+        instance_data_graph (str): The URI of the instance data graph.
+        ontology_graph (str): The URI of the ontology graph.
+
+    Returns:
+        str: The SPARQL query string.
+    """
+
+    things_to_strings_query = f"""
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX schema: <http://schema.org/>
+    PREFIX sh: <http://www.w3.org/ns/shacl#>
+
+    CONSTRUCT {{
+        ?s ?p ?finalValue .
+    }}
+    WHERE {{
+        GRAPH <{instance_data_graph}> {{
+            ?s ?p ?o .
+        }}
+
+        # Get the expected enum class for this property
+        GRAPH <{ontology_graph}> {{
+            OPTIONAL {{
+                ?propertyShape sh:path ?p ;
+                            sh:class ?expectedEnumClass .
+
+                ?o a ?expectedEnumClass ;
+                rdfs:label ?label .
+            }}
+        }}
+
+        # If a label is found (meaning ?o is an enum instance), use it; otherwise keep the original value
+        BIND(COALESCE(?label, ?o) AS ?finalValue)
+    }}
+    """
+
+    return things_to_strings_query
 
 def get_item_query(repo: str, graph: str) -> str:
     """
@@ -82,8 +114,8 @@ def get_item_query(repo: str, graph: str) -> str:
     Returns:
         str: The SPARQL query string.
     """
+    #TODO: change to the correct namespace
     item_query = f"""
-        PREFIX : <https://imaging-plaza.epfl.ch/>
         CONSTRUCT {{
         ?subject ?predicate ?object .
         ?object ?p ?o .
