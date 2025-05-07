@@ -5,7 +5,7 @@ from fastapi import FastAPI, File, UploadFile
 from typing import List
 
 from .cli import strings_to_things, things_to_strings, initialize_graphs
-from queries import get_item_query
+from .queries import get_item_query
 
 from SPARQLWrapper import SPARQLWrapper, JSON, QueryResult, TURTLE, CSV, JSONLD
 import shutil

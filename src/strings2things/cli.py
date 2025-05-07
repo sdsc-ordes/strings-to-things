@@ -2,11 +2,8 @@ import os
 import glob
 import argparse
 import rdflib
-from strings2things.config import config_args
-from strings2things.queries import get_strings_to_things_query, get_things_to_strings_query
-
-from strings2things.api import app
-import uvicorn
+from .config import config_args
+from .queries import get_strings_to_things_query, get_things_to_strings_query
 
 
 def load_graphs_from_path(path, graph, file_extension="*.ttl", format="turtle"):
@@ -80,8 +77,6 @@ def main():
     elif args.direction == "thing2string":
         dataset = initialize_graphs(args.ontology, args.kg, args.ontology_uri, args.kg_uri)
         things_to_strings(dataset, args.output_file, args.kg_uri, args.ontology_uri)
-    elif args.direction == "api":
-        uvicorn.run(app, host="0.0.0.0", port=1234, reload=True)
     else:
         print("Invalid direction. Please choose from: string2thing, thing2string, or api.")
 
