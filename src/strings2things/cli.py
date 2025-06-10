@@ -33,7 +33,7 @@ def initialize_graphs(ontology_path, kg_path, ontology_uri, kg_uri):
     return dataset
 
 
-def strings_to_things(dataset: str, output_file:str, kg_uri:str, ontology_uri:str):
+def strings_to_things(dataset: str, output:str, kg_uri:str, ontology_uri:str):
     """
     Replace human-readable strings in the KG with ontology IRIs based on matches.
     """
@@ -44,13 +44,13 @@ def strings_to_things(dataset: str, output_file:str, kg_uri:str, ontology_uri:st
     for triple in results.graph:
         new_graph.add(triple)
 
-    new_graph.serialize(destination=output_file, format="turtle")
+    new_graph.serialize(destination=output, format="turtle")
     print(
-        f"Strings replaced with IRIs and written to {output_file} ({len(new_graph)} triples)."
+        f"Strings replaced with IRIs and written to {output} ({len(new_graph)} triples)."
     )
 
 
-def things_to_strings(dataset:str, output_file:str, kg_uri:str, ontology_uri:str):
+def things_to_strings(dataset:str, output:str, kg_uri:str, ontology_uri:str):
     """
     Replace IRIs in the KG with human-readable labels using the ontology.
     """
@@ -61,9 +61,9 @@ def things_to_strings(dataset:str, output_file:str, kg_uri:str, ontology_uri:str
     for triple in results.graph:
         new_graph.add(triple)
 
-    new_graph.serialize(destination=output_file, format="turtle")
+    new_graph.serialize(destination=output, format="turtle")
     print(
-        f"IRIs replaced with labels and written to {output_file} ({len(new_graph)} triples)."
+        f"IRIs replaced with labels and written to {output} ({len(new_graph)} triples)."
     )
 
 
@@ -73,10 +73,10 @@ def main():
 
     if args.direction == "string2thing":
         dataset = initialize_graphs(args.ontology, args.kg, args.ontology_uri, args.kg_uri)
-        strings_to_things(dataset, args.output_file, args.kg_uri, args.ontology_uri)
+        strings_to_things(dataset, args.output, args.kg_uri, args.ontology_uri)
     elif args.direction == "thing2string":
         dataset = initialize_graphs(args.ontology, args.kg, args.ontology_uri, args.kg_uri)
-        things_to_strings(dataset, args.output_file, args.kg_uri, args.ontology_uri)
+        things_to_strings(dataset, args.output, args.kg_uri, args.ontology_uri)
     else:
         print("Invalid direction. Please choose from: string2thing, thing2string, or api.")
 
