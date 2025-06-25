@@ -8,7 +8,7 @@ prefix xsd:  <http://www.w3.org/2001/XMLSchema#>
 prefix shsh: <http://www.w3.org/ns/shacl-shacl#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix dcterms: <http://purl.org/dc/terms/>
-prefix imag: <https://imaging-plaza.epfl.ch/ontology#>
+prefix imag: <https://imaging-plaza.epfl.ch/ontology>
 prefix md4i: <http://w3id.org/nfdi4ing/metadata4ing#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix dct: <http://purl.org/dc/terms/>
@@ -23,19 +23,19 @@ prefix xsd:  <http://www.w3.org/2001/XMLSchema#>
 prefix shsh: <http://www.w3.org/ns/shacl-shacl#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix dcterms: <http://purl.org/dc/terms/>
-prefix imag: <https://imaging-plaza.epfl.ch/ontology#>
+prefix imag: <https://imaging-plaza.epfl.ch/ontology>
 prefix md4i: <http://w3id.org/nfdi4ing/metadata4ing#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix dct: <http://purl.org/dc/terms/>
 prefix vann: <http://purl.org/vocab/vann/>
 
 
-<https://imaging-plaza.epfl.ch/ontology#>
+<https://imaging-plaza.epfl.ch/ontology>
 	a owl:Ontology ;
 	sh:entailment sh:Rules ;
 	sh:declare [
 		sh:prefix "imag" ;
-		sh:namespace <https://imaging-plaza.epfl.ch/ontology#> ;
+		sh:namespace <https://imaging-plaza.epfl.ch/ontology> ;
 	] .
   imag:fairlevel0Shape a sh:NodeShape    
   .
@@ -659,7 +659,7 @@ md4i:hasRorIdShape
 
 
 
-<https://imaging-plaza.epfl.ch/ontology#>
+<https://imaging-plaza.epfl.ch/ontology>
     a owl:Ontology ;
     dct:abstract "The Imaging Plaza ontology provides concepts (classes and properties) to model human and machine readable imaging software metadata. It is the result of re-using external pre-existing vocabularies such as schema.org and the software description ontology, together with custom imaging specific objects and properties." ;
     dct:contributor "Robin Franken", "Carlos Vivar Rios" ;
@@ -670,7 +670,7 @@ md4i:hasRorIdShape
     dct:modified "2025-01-28"^^xsd:date ;
     dct:title "Imaging Plaza Ontology" ;
     vann:preferredNamespacePrefix "imag" ;
-    vann:preferredNamespaceUri "https://imaging-plaza.epfl.ch/ontology#"^^xsd:string ;
+    vann:preferredNamespaceUri "https://imaging-plaza.epfl.ch/ontology"^^xsd:string ;
     owl:versionInfo "0.8.0"^^xsd:string 
     .
 

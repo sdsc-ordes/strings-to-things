@@ -15,7 +15,7 @@ def config_args():
     )
     parser.add_argument(
         "--ontology-uri",
-        default="https://imaging-plaza.epfl.ch/ontology#",
+        default="https://imaging-plaza.epfl.ch/ontology",
         help="Named graph URI for ontology",
     )
     parser.add_argument(
