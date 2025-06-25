@@ -1,6 +1,5 @@
 import os
 import glob
-import argparse
 import rdflib
 from strings2things.config import args
 from strings2things.queries import strings_to_things_query, things_to_strings_query
