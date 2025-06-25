@@ -17,14 +17,6 @@
     # Nixpkgs repository.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    # Nixpkgs repository on stable.
-    nixpkgsStable.url = "github:nixos/nixpkgs/nixos-24.11";
-
-    nix = {
-      url = "github:nixos/nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Format the repo with nix-treefmt.
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
