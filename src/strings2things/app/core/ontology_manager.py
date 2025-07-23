@@ -1,6 +1,8 @@
 from rdflib import Graph
 from SPARQLWrapper import SPARQLWrapper, TURTLE
 from strings2things.app import config
+from rdflib import Literal
+from rdflib import XSD
 
 class OntologyManager:
     def __init__(self):
@@ -29,8 +31,10 @@ class OntologyManager:
         result = sparql.query().convert()
 
         g = Graph()
-        g.parse(data=result.decode("utf-8"), format="turtle")
+        g.parse(data=result, format="turtle")
         return g
+
+
 
     def _build_label_map(self):
         seen = {}
@@ -40,13 +44,23 @@ class OntologyManager:
                 "http://www.w3.org/2004/02/skos/core#prefLabel",
             ):
                 continue
-            if not isinstance(o, str) and not o.language:
+
+            # Only process literals (strings), skip others
+            if not isinstance(o, Literal):
                 continue
+
+            # Only accept literals of type string or with language tags
+            if o.datatype and o.datatype != XSD.string:
+                # Skip non-string typed literals (e.g. numbers, dates)
+                continue
+
+            # Now get label text (lowercase, stripped)
             label = str(o).strip().lower()
             iri = str(s)
 
             if label in seen:
                 if seen[label] != iri:
+                    # Ambiguous label; remove from map
                     self.label_map.pop(label, None)
                     continue
             else:
