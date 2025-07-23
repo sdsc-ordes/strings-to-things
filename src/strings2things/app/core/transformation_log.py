@@ -25,5 +25,4 @@ class TransformationLog:
         """
         return {
             "total": len(self.entries),
-            # Add more stats here if needed
         }

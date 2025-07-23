@@ -14,6 +14,7 @@ dependencies = [
     "openai-agents>=0.0.8",
     "pydantic>=2.10.6",
     "pyfuzon>=0.3.0",
+    "pytest>=8.4.1",
     "rdflib>=7.1.4",
     "SPARQLWrapper>=2.0.0",
 ]
