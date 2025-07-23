@@ -11,10 +11,12 @@ version = "0.0.1"
 
 dependencies = [
     "dotenv>=0.9.9",
+    "fastapi>=0.116.1",
     "openai-agents>=0.0.8",
     "pydantic>=2.10.6",
     "pyfuzon>=0.3.0",
     "pytest>=8.4.1",
+    "python-multipart>=0.0.20",
     "rdflib>=7.1.4",
     "SPARQLWrapper>=2.0.0",
 ]

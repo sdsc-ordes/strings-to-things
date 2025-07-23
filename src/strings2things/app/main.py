@@ -4,7 +4,7 @@ Entry point for the FastAPI app. Loads ontology and mounts routes.
 """
 
 from fastapi import FastAPI
-from app.api.endpoints import router
+from strings2things.app.api.endpoints import router
 
 app = FastAPI(title="Strings to Things")
 
