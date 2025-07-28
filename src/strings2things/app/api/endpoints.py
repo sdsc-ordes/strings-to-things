@@ -10,11 +10,9 @@ import logging
 
 router = APIRouter()
 
-# ✅ Initialize and load ontologies at startup
 ontology_manager = OntologyManager()
 ontology_manager.load_ontologies()
 
-# ✅ Build RDFTransformer with the label map
 transformer = RDFTransformer(ontology_manager.get_label_map())
 
 @router.post("/transform")
