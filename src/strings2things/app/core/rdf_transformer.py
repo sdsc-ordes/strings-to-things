@@ -28,7 +28,9 @@ class RDFTransformer:
 
                     # Retain original triple (to retain backward compatibility for now)
                     output_graph.add((s, p, o))
-                    output_graph.add((iri, URIRef("http://wwww.example.org/thingOf"), o))
+                    output_graph.add(
+                        (iri, URIRef("http://wwww.example.org/thingOf"), o)
+                    )
 
                     output_graph.add((s, p, iri))
 
@@ -37,18 +39,21 @@ class RDFTransformer:
                         predicate=str(p),
                         original_value=str(o),
                         replacement_iri=str(iri),
-                        reason="unambiguous match"
+                        reason="unambiguous match",
                     )
-                    continue  
+                    continue
 
-            
             output_graph.add((s, p, o))
             self.log.add_entry(
                 subject=str(s),
                 predicate=str(p),
                 original_value=str(o),
                 replacement_iri=None,
-                reason="not a string literal" if not isinstance(o, Literal) else "no match in label map"
+                reason=(
+                    "not a string literal"
+                    if not isinstance(o, Literal)
+                    else "no match in label map"
+                ),
             )
 
         return output_graph

@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../s
 
 from strings2things.app.core.ontology_manager import OntologyManager
 
+
 def main():
     manager = OntologyManager()
     manager.load_ontologies()
@@ -14,6 +15,7 @@ def main():
     print("\n--- Label Map ---")
     for label, iri in sorted(label_map.items()):
         print(f"{label} → {iri}")
+
 
 if __name__ == "__main__":
     main()

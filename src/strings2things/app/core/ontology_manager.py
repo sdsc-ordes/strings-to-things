@@ -6,13 +6,16 @@ from rdflib import XSD
 
 settings = Settings()
 
+
 class OntologyManager:
     def __init__(self):
         self.graph = Graph()
         self.label_map: dict[str, str] = {}
 
     def load_ontologies(self):
-        print(f"[INFO] Connecting to SPARQL endpoint: {settings.ONTOLOGY_SPARQL_ENDPOINT}")
+        print(
+            f"[INFO] Connecting to SPARQL endpoint: {settings.ONTOLOGY_SPARQL_ENDPOINT}"
+        )
         for graph_iri in settings.get_graph_iris():
             print(f"[INFO] Loading named graph: {graph_iri}")
             g = self._load_named_graph(settings.ONTOLOGY_SPARQL_ENDPOINT, graph_iri)
@@ -23,12 +26,14 @@ class OntologyManager:
     def _load_named_graph(self, endpoint: str, graph_iri: str) -> Graph:
         sparql = SPARQLWrapper(endpoint)
         sparql.setCredentials(settings.GRAPHDB_USERNAME, settings.GRAPHDB_PASSWORD)
-        sparql.setQuery(f"""
+        sparql.setQuery(
+            f"""
             CONSTRUCT {{ ?s ?p ?o }}
             WHERE {{
                 GRAPH <{graph_iri}> {{ ?s ?p ?o }}
             }}
-        """)
+        """
+        )
         sparql.setReturnFormat(TURTLE)
         result = sparql.query().convert()
 
@@ -69,7 +74,9 @@ class OntologyManager:
         print(f"[INFO] Label map built with {len(self.label_map)} unambiguous labels.")
 
     def _check_ambiguities(self, seen: dict[str, str | list[str]]) -> dict[str, str]:
-        ambiguous_labels = {label for label, iris in seen.items() if isinstance(iris, list)}
+        ambiguous_labels = {
+            label for label, iris in seen.items() if isinstance(iris, list)
+        }
 
         if ambiguous_labels:
             msg = f"Found ambiguous labels: {', '.join(sorted(ambiguous_labels))} \n Please resolve these in your ontology before proceeding."
@@ -79,7 +86,9 @@ class OntologyManager:
                 print(f"[WARNING] {msg}")
 
         # Return only unambiguous labels (those with a single IRI string)
-        return {label: iris for label, iris in seen.items() if not isinstance(iris, list)}
+        return {
+            label: iris for label, iris in seen.items() if not isinstance(iris, list)
+        }
 
     def get_label_map(self) -> dict[str, str]:
         return self.label_map

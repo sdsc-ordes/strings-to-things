@@ -5,12 +5,14 @@ from strings2things.app.core.transformation_log import TransformationLog
 
 EX = Namespace("http://example.org/")
 
+
 @pytest.fixture
 def label_map():
     return {
         "geology": "http://example.org/ontology#Geology",
-        "biology": "http://example.org/ontology#Biology"
+        "biology": "http://example.org/ontology#Biology",
     }
+
 
 @pytest.fixture
 def input_graph():
@@ -19,6 +21,7 @@ def input_graph():
     g.add((EX.subj2, EX.hasCategory, Literal("UnknownLabel")))
     g.add((EX.subj3, EX.hasValue, URIRef("http://example.org/someIRI")))
     return g
+
 
 def test_rdf_transformer(label_map, input_graph):
     transformer = RDFTransformer(label_map)
