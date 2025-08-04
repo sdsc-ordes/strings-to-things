@@ -6,7 +6,7 @@ authors = [
 ]
 description = "This a repository turns strings into things"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 version = "0.0.1"
 
 dependencies = [
