@@ -20,19 +20,18 @@ class RDFTransformer:
         output_graph = Graph()
 
         for s, p, o in input_graph:
-            # Case: object is a string literal
+            # if string matches object
             if isinstance(o, Literal) and isinstance(o.value, str):
                 label = o.value.strip().lower()
                 if label in self.label_map:
                     iri = URIRef(self.label_map[label])
 
-                    # Retain original triple (development mode)
+                    # Retain original triple (to retain backward compatibility for now)
                     output_graph.add((s, p, o))
+                    output_graph.add((iri, URIRef("http://wwww.example.org/thingOf"), o))
 
-                    # Add transformed triple
                     output_graph.add((s, p, iri))
 
-                    # Log the transformation
                     self.log.add_entry(
                         subject=str(s),
                         predicate=str(p),
@@ -40,9 +39,9 @@ class RDFTransformer:
                         replacement_iri=str(iri),
                         reason="unambiguous match"
                     )
-                    continue  # move to next triple
+                    continue  
 
-            # Case: leave untouched
+            
             output_graph.add((s, p, o))
             self.log.add_entry(
                 subject=str(s),
