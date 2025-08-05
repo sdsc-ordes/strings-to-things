@@ -19,7 +19,9 @@ RUN pip install uv
 
 # Copy pyproject.toml and install dependencies
 COPY pyproject.toml uv.lock ./
-RUN uv pip install --system --no-deps .
+COPY src/ ./src
+
+RUN pip install .
 
 # Copy your FastAPI app code
 COPY src/ ./src/
@@ -29,4 +31,4 @@ COPY .env .env
 EXPOSE 7514
 
 # Run the FastAPI app
-CMD ["uvicorn", "src.strings2things.app.main:app", "--host", "0.0.0.0", "--port", "7514"]
+CMD ["python", "-m", "uvicorn", "src.strings2things.app.main:app", "--host", "0.0.0.0", "--port", "7514"]
