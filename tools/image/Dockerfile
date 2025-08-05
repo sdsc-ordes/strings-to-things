@@ -25,10 +25,9 @@ RUN pip install .
 
 # Copy your FastAPI app code
 COPY src/ ./src/
-COPY .env .env
 
 # Expose the port FastAPI will run on
 EXPOSE 7514
 
 # Run the FastAPI app
-CMD ["python", "-m", "uvicorn", "src.strings2things.app.main:app", "--host", "0.0.0.0", "--port", "7514"]
+ENTRYPOINT ["python", "-m", "uvicorn", "src.strings2things.app.main:app", "--host", "0.0.0.0", "--port", "7514"]
