@@ -1,0 +1,2 @@
+[INFO] Connecting to SPARQL endpoint: http://host.docker.internal:7200/repositories/stringstothings/statements
+[INFO] Loading named graph: https://example.org/taxonomy/
