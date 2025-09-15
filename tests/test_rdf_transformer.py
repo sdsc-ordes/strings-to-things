@@ -34,7 +34,7 @@ def input_graph():
 
 def test_rdf_transformer_combined(label_map, input_graph):
     # Initialize transformer with fuzzy matching enabled
-    transformer = RDFTransformer(label_map, fuzzy=True, fuzzy_threshold=80)
+    transformer = RDFTransformer(label_map, fuzzy=True, fuzzy_threshold=90)
     output_graph = transformer.transform(input_graph)
 
     # --- 1. Check graph triples ---

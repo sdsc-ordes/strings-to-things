@@ -10,7 +10,7 @@ from rapidfuzz import process
 
 
 class RDFTransformer:
-    def __init__(self, label_map: dict[str, str], fuzzy: bool, fuzzy_threshold: int = 85):
+    def __init__(self, label_map: dict[str, str], fuzzy: bool, fuzzy_threshold: int = 90):
         """
         :param label_map: dict of {label -> IRI}
         :param fuzzy_threshold: minimum score for fuzzy fallback
