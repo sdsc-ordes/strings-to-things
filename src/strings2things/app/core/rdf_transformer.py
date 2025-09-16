@@ -23,22 +23,25 @@ class RDFTransformer:
     def _find_match(self, label: str) -> str | None:
         """
         Find an IRI for the given label.
-        First tries exact match, then falls back to fuzzy.
+        First tries exact match, then (optionally) falls back to fuzzy.
         """
         label = label.strip().lower()
 
-        # Exact match
-        if label in self.label_map:
-            return self.label_map[label]
+        # Exact match first (cheap lookup)
+        iri = self.label_map.get(label)
+        if iri:
+            return iri
 
         # Fuzzy fallback
-        best = process.extractOne(label, self.label_map.keys())
-        if best:
-            match, score, _ = best
-            if score >= self.fuzzy_threshold:
-                return self.label_map[match]
+        if self.fuzzy:
+            best = process.extractOne(label, self.label_map.keys())
+            if best:
+                match, score, _ = best
+                if score >= self.fuzzy_threshold:
+                    return self.label_map[match]
 
         return None
+
 
     def transform(self, input_graph: Graph) -> Graph:
         """
