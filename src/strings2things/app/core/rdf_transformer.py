@@ -55,7 +55,7 @@ class RDFTransformer:
 
                     # Retain original triple (for backward compatibility)
                     output_graph.add((s, p, o))
-                    output_graph.add((iri, URIRef("http://wwww.example.org/thingOf"), o))
+                    output_graph.add((iri, URIRef("http://www.example.org/thingOf"), o))
                     output_graph.add((s, p, iri))
 
                     self.log.add_entry(
