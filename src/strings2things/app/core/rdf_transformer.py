@@ -1,16 +1,47 @@
 # app/core/rdf_transformer.py
 """
 Transforms RDF graphs by replacing string literals with matching ontology IRIs.
+Supports exact and fuzzy matching (RapidFuzz).
 """
 
 from rdflib import Graph, Literal, URIRef
 from strings2things.app.core.transformation_log import TransformationLog
+from rapidfuzz import process
 
 
 class RDFTransformer:
-    def __init__(self, label_map: dict[str, str]):
+    def __init__(self, label_map: dict[str, str], fuzzy: bool, fuzzy_threshold: int = 90):
+        """
+        :param label_map: dict of {label -> IRI}
+        :param fuzzy_threshold: minimum score for fuzzy fallback
+        """
         self.label_map = label_map
+        self.fuzzy = fuzzy
+        self.fuzzy_threshold = fuzzy_threshold
         self.log = TransformationLog()
+
+    def _find_match(self, label: str) -> str | None:
+        """
+        Find an IRI for the given label.
+        First tries exact match, then (optionally) falls back to fuzzy.
+        """
+        label = label.strip().lower()
+
+        # Exact match first (cheap lookup)
+        iri = self.label_map.get(label)
+        if iri:
+            return iri
+
+        # Fuzzy fallback
+        if self.fuzzy:
+            best = process.extractOne(label, self.label_map.keys())
+            if best:
+                match, score, _ = best
+                if score >= self.fuzzy_threshold:
+                    return self.label_map[match]
+
+        return None
+
 
     def transform(self, input_graph: Graph) -> Graph:
         """
@@ -20,18 +51,14 @@ class RDFTransformer:
         output_graph = Graph()
 
         for s, p, o in input_graph:
-            # if string matches object
             if isinstance(o, Literal) and isinstance(o.value, str):
-                label = o.value.strip().lower()
-                if label in self.label_map:
-                    iri = URIRef(self.label_map[label])
+                iri_str = self._find_match(o.value)
+                if iri_str:
+                    iri = URIRef(iri_str)
 
-                    # Retain original triple (to retain backward compatibility for now)
+                    # Retain original triple (for backward compatibility)
                     output_graph.add((s, p, o))
-                    output_graph.add(
-                        (iri, URIRef("http://wwww.example.org/thingOf"), o)
-                    )
-
+                    output_graph.add((iri, URIRef("http://www.example.org/thingOf"), o))
                     output_graph.add((s, p, iri))
 
                     self.log.add_entry(
@@ -39,10 +66,13 @@ class RDFTransformer:
                         predicate=str(p),
                         original_value=str(o),
                         replacement_iri=str(iri),
-                        reason="unambiguous match",
+                        reason="exact match"
+                        if o.value.strip().lower() in self.label_map
+                        else f"fuzzy match (threshold={self.fuzzy_threshold})",
                     )
                     continue
 
+            # If no match found → leave as-is
             output_graph.add((s, p, o))
             self.log.add_entry(
                 subject=str(s),
@@ -52,7 +82,7 @@ class RDFTransformer:
                 reason=(
                     "not a string literal"
                     if not isinstance(o, Literal)
-                    else "no match in label map"
+                    else "no match found"
                 ),
             )
 

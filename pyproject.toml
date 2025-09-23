@@ -19,6 +19,7 @@ dependencies = [
     "python-multipart>=0.0.20",
     "rdflib>=7.1.4",
     "SPARQLWrapper>=2.0.0",
+    "rapidfuzz>=3.0.0",
 ]
 [dependency-groups]
 dev = [
