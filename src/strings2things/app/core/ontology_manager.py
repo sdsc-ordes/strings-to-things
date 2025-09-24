@@ -4,28 +4,33 @@ from strings2things.app.config import Settings
 from rdflib import Literal
 from rdflib import XSD
 
-settings = Settings()
-
 
 class OntologyManager:
     def __init__(self):
         self.graph = Graph()
         self.label_map: dict[str, str] = {}
+        # Defer settings creation until load time to avoid import-time failures
+        self.settings: Settings | None = None
 
     def load_ontologies(self):
+        # Initialize settings on first load
+        if self.settings is None:
+            self.settings = Settings()
+
         print(
-            f"[INFO] Connecting to SPARQL endpoint: {settings.ONTOLOGY_SPARQL_ENDPOINT}"
+            f"[INFO] Connecting to SPARQL endpoint: {self.settings.ONTOLOGY_SPARQL_ENDPOINT}"
         )
-        for graph_iri in settings.get_graph_iris():
+        for graph_iri in self.settings.get_graph_iris():
             print(f"[INFO] Loading named graph: {graph_iri}")
-            g = self._load_named_graph(settings.ONTOLOGY_SPARQL_ENDPOINT, graph_iri)
+            g = self._load_named_graph(self.settings.ONTOLOGY_SPARQL_ENDPOINT, graph_iri)
             self.graph += g
         print(f"[INFO] Loaded {len(self.graph)} triples.")
         self._build_label_map()
 
     def _load_named_graph(self, endpoint: str, graph_iri: str) -> Graph:
         sparql = SPARQLWrapper(endpoint)
-        sparql.setCredentials(settings.GRAPHDB_USERNAME, settings.GRAPHDB_PASSWORD)
+        assert self.settings is not None, "Settings must be initialized before loading ontologies"
+        sparql.setCredentials(self.settings.GRAPHDB_USERNAME, self.settings.GRAPHDB_PASSWORD)
         sparql.setQuery(
             f"""
             CONSTRUCT {{ ?s ?p ?o }}
@@ -80,7 +85,7 @@ class OntologyManager:
 
         if ambiguous_labels:
             msg = f"Found ambiguous labels: {', '.join(sorted(ambiguous_labels))} \n Please resolve these in your ontology before proceeding."
-            if settings.FAIL_ON_AMBIGUOUS_LABELS:
+            if (self.settings or Settings()).FAIL_ON_AMBIGUOUS_LABELS:
                 raise ValueError(msg)
             else:
                 print(f"[WARNING] {msg}")
