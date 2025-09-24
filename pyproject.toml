@@ -20,6 +20,7 @@ dependencies = [
     "rdflib>=7.1.4",
     "SPARQLWrapper>=2.0.0",
     "rapidfuzz>=3.0.0",
+    "typer>=0.12.5",
 ]
 [dependency-groups]
 dev = [
@@ -27,7 +28,12 @@ dev = [
 ]
 
 [project.scripts]
-cli = 'strings2things.cli:main'
+# Primary multi-command CLI (Typer based)
+strings2things = 'strings2things.cli:app'
+# Shortcut to launch API server directly
+strings2things-serve = 'strings2things.cli:serve'
+# Backward compatibility alias if previous users relied on `cli`
+cli = 'strings2things.cli:app'
 
 [build-system]
 requires = ["hatchling"]
