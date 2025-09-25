@@ -14,7 +14,7 @@ ontology_manager = OntologyManager()
 ontology_manager.load_ontologies()
 
 # Keep transformer as a base instance
-base_label_map = ontology_manager.get_label_map()
+base_label_map = ontology_manager.get_predicate_label_map()
 
 
 @router.post("/transform")
