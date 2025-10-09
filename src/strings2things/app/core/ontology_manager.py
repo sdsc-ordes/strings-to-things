@@ -37,10 +37,10 @@ class OntologyManager:
         g = Graph()
         g.parse(data=result, format="turtle")
         return g
-    
+
     def _check_predicate_ambiguities(
-    self, predicate_map: dict[str, dict[str, str]]
-) -> dict[str, dict[str, str]]:
+        self, predicate_map: dict[str, dict[str, str]]
+    ) -> dict[str, dict[str, str]]:
         """
         Fail immediately if any predicate has duplicate labels.
         Returns the same map if no ambiguities are found.
@@ -88,17 +88,14 @@ class OntologyManager:
                             for label in self.graph.objects(instance, label_pred):
                                 if isinstance(label, Literal) and (not label.datatype or label.datatype == XSD.string):
                                     normalized_label = str(label).strip().lower()
-                                    # Check if duplicate
                                     if normalized_label in predicate_map[predicate_iri]:
                                         raise ValueError(
                                             f"Ambiguous label '{normalized_label}' for predicate {predicate_iri}"
                                         )
                                     predicate_map[predicate_iri][normalized_label] = str(instance)
 
-        self.label_map = predicate_map
-
-
-
+        # ✅ Validate the entire map before finalizing
+        self.label_map = self._check_predicate_ambiguities(predicate_map)
 
     def get_predicate_label_map(self) -> dict[str, dict[str, str]]:
         """
