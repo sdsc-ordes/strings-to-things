@@ -55,7 +55,11 @@ class RDFTransformer:
                         predicate=str(p),
                         original_value=str(o),
                         replacement_iri=str(iri),
-                        reason="exact match" if o.value.strip().lower() in self.predicate_label_map.get(str(p), {}) else f"fuzzy match (threshold={self.fuzzy_threshold})",
+                        reason=(
+                            "exact match"
+                            if o.value.strip().lower() in self.predicate_label_map.get(str(p), {})
+                            else f"fuzzy match (threshold={self.fuzzy_threshold})"
+                        ),
                     )
                     continue
 
