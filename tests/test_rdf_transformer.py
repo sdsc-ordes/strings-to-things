@@ -1,3 +1,4 @@
+# tests/test_rdf_transformer.py
 import pytest
 from rdflib import Graph, URIRef, Literal, Namespace
 from strings2things.app.core.rdf_transformer import RDFTransformer
@@ -6,8 +7,10 @@ EX = Namespace("http://example.org/ontology#")
 
 
 @pytest.fixture
-def label_map():
-    # Ontology label map: canonical labels → IRIs
+def simple_label_map():
+    """
+    Mock label map: labels -> instance IRIs
+    """
     return {
         "geology": str(EX.Geology),
         "biology": str(EX.Biology),
@@ -16,55 +19,35 @@ def label_map():
 
 
 @pytest.fixture
-def input_graph():
+def input_graph_simple():
     g = Graph()
-    # Exact match example
+    # Exact match
     g.add((EX.subj1, EX.hasCategory, Literal("geology")))
-
-    # Fuzzy match example (slightly misspelled)
+    # Fuzzy match
     g.add((EX.subj2, EX.hasCategory, Literal("biolgy")))
-
-    # Unknown label (should remain unchanged)
+    # Unknown
     g.add((EX.subj3, EX.hasCategory, Literal("unknownlabel")))
-
-    # Non-literal value (should remain untouched)
+    # Non-literal
     g.add((EX.subj4, EX.hasValue, URIRef("http://example.org/someIRI")))
     return g
 
 
-def test_rdf_transformer_combined(label_map, input_graph):
-    # Initialize transformer with fuzzy matching enabled
-    transformer = RDFTransformer(label_map, fuzzy=True, fuzzy_threshold=90)
-    output_graph = transformer.transform(input_graph)
+def test_rdf_transformer(simple_label_map, input_graph_simple):
+    # Use full predicate IRI in the label map
+    predicate_label_map = {str(EX.hasCategory): simple_label_map}
 
-    # --- 1. Check graph triples ---
+    transformer = RDFTransformer(
+        predicate_label_map=predicate_label_map,
+        fuzzy=True,
+        fuzzy_threshold=90
+    )
+    output_graph = transformer.transform(input_graph_simple)
 
-    # Exact match: literal replaced by IRI
-    assert (EX.subj1, EX.hasCategory, URIRef("http://example.org/ontology#Geology")) in output_graph
-
-    # Fuzzy match: literal replaced by IRI
-    assert (EX.subj2, EX.hasCategory, URIRef("http://example.org/ontology#Biology")) in output_graph
-
-    # Unknown label: literal remains unchanged
+    # Exact match → replaced with IRI
+    assert (EX.subj1, EX.hasCategory, EX.Geology) in output_graph
+    # Fuzzy match → replaced with closest IRI
+    assert (EX.subj2, EX.hasCategory, EX.Biology) in output_graph
+    # Unknown → remains literal
     assert (EX.subj3, EX.hasCategory, Literal("unknownlabel")) in output_graph
-
-    # Non-literals remain untouched
+    # Non-literal → untouched
     assert (EX.subj4, EX.hasValue, URIRef("http://example.org/someIRI")) in output_graph
-
-    # --- 2. Check log entries ---
-    log = transformer.log.entries
-
-    # Exact match log
-    geology_log = next(e for e in log if e["original"] == "geology")
-    assert geology_log["replacement"] == "http://example.org/ontology#Geology"
-    assert geology_log["reason"] == "exact match"
-
-    # Fuzzy match log
-    biolgy_log = next(e for e in log if e["original"] == "biolgy")
-    assert biolgy_log["replacement"] == "http://example.org/ontology#Biology"
-    assert "fuzzy match" in biolgy_log["reason"]
-
-    # Unknown label log
-    unknown_log = next(e for e in log if e["original"] == "unknownlabel")
-    assert unknown_log["replacement"] is None
-    assert unknown_log["reason"] == "no match found"

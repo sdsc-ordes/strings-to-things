@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     GRAPHDB_PASSWORD: str
     ONTOLOGY_SPARQL_ENDPOINT: str
     ONTOLOGY_GRAPH_IRIS: str  # raw string from .env
-    FAIL_ON_AMBIGUOUS_LABELS: bool = True
 
     _graph_iris: List[str] = PrivateAttr()
 
