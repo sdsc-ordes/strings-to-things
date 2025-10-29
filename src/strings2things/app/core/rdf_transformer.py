@@ -7,6 +7,7 @@ Supports exact and fuzzy matching (RapidFuzz).
 from rdflib import Graph, Literal, URIRef
 from strings2things.app.core.transformation_log import TransformationLog
 from rapidfuzz import process
+import hashlib  # ✅ added for deterministic hash
 
 
 class RDFTransformer:
@@ -63,6 +64,21 @@ class RDFTransformer:
                     )
                     continue
 
+                # ✅ NEW: if no match, generate deterministic IRI from string value
+                hash_digest = hashlib.sha256(o.value.encode("utf-8")).hexdigest()
+                gen_iri = URIRef(f"http://example.org/gen/{hash_digest}")
+                output_graph.add((s, p, gen_iri))
+                output_graph.add((gen_iri, URIRef("http://www.w3.org/2000/01/rdf-schema#label"), o))
+                self.log.add_entry(
+                    subject=str(s),
+                    predicate=str(p),
+                    original_value=str(o),
+                    replacement_iri=str(gen_iri),
+                    reason="no match found — generated IRI",
+                )
+                continue  # ✅ skip adding the original literal again
+
+            # existing fallback
             output_graph.add((s, p, o))
             self.log.add_entry(
                 subject=str(s),
